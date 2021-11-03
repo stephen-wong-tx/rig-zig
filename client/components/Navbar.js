@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
+import Rig from './Rig'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
@@ -24,6 +25,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
       )}
     </nav>
     <hr />
+    <Rig />
   </div>
 )
 

@@ -19,6 +19,9 @@
   },
   "author": "Stephen Wong",
   "dependencies": {
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@mui/material": "^5.0.6",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "compression": "^1.7.3",
@@ -27,7 +30,8 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
     "pg": "^8.5.1",
-    "sequelize": "^6.3.5"
+    "sequelize": "^6.3.5",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
