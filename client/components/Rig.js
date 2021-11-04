@@ -1,82 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, IconButton, TextField, Box, Slider } from "@mui/material";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import Peer from "simple-peer";
+import io from "socket.io-client";
+import { Button, IconButton, TextField, Grid, Paper } from "@mui/material";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PhoneIcon from "@mui/icons-material/Phone";
 
 // const socket = io.connect('https://peer-pedalboard.herokuapp.com/');
-// const socket = io.connect('http://localhost:8080');
+const socket = io.connect("http://localhost:8080");
 
 const Rig = () => {
-  const [ stream, setStream ] = useState();
+  const [receivingCall, setReceivingCall] = useState(false);
+  const [me, setMe] = useState("");
+  const [stream, setStream] = useState();
+  const [idToCall, setIdToCall] = useState("");
+  const [callerSignal, setCallerSignal] = useState();
+  const [callEnded, setCallEnded] = useState(false);
+  const [callAccepted, setCallerAccepted] = useState(false);
+  const [caller, setCaller] = useState("");
+  const [name, setName] = useState("");
   const [volumeValue, setVolumeValue] = useState("1");
   const [preampDriveValue, setPreampDriveValue] = useState("10");
   const [bassValue, setBassValue] = useState("-10");
   const [midValue, setMidValue] = useState("8");
   const [trebleValue, setTrebleValue] = useState("9");
   const [driveValue, setDriveValue] = useState("50");
-
-  function valuetext(value) {
-    return `${value}`;
-  }
-
-  const VolumeMarks = [
-    {
-      value: 0,
-      label: "0",
-    },
-    {
-      value: 4,
-      label: "4db",
-    },
-  ];
-  const PreampMarks = [
-    {
-      value: 0,
-      label: "0",
-    },
-    {
-      value: 100,
-      label: "100",
-    },
-  ];
-  const BassMarks = [
-    {
-      value: -15,
-      label: "-15",
-    },
-    {
-      value: 9,
-      label: "9",
-    },
-  ];
-  const MidMarks = [
-    {
-      value: -10,
-      label: "-10",
-    },
-    {
-      value: 10,
-      label: "10",
-    },
-  ];
-  const TrebleMarks = [
-    {
-      value: -10,
-      label: "-10",
-    },
-    {
-      value: 10,
-      label: "10",
-    },
-  ];
-  const OverdriveMarks = [
-    {
-      value: 0,
-      label: "0",
-    },
-    {
-      value: 150,
-      label: "150",
-    },
-  ];
+  const myVideo = useRef();
+  const connectionRef = useRef();
+  const otherUserVideo = useRef();
 
   const makePreAmpCurve = () => {
     let curve = new Float32Array(44100),
@@ -250,7 +201,19 @@ const Rig = () => {
 
         localStream = controlledStream;
         setStream(controlledStream);
+        myVideo.current.srcObject = stream;
       });
+
+    socket.on("me", (id) => {
+      setMe(id);
+    });
+
+    socket.on("callUser", ({ from, name, signal }) => {
+      setReceivingCall(true);
+      setCaller(from);
+      setName(name);
+      setCallerSignal(signal);
+    });
   }, [
     volumeValue,
     preampDriveValue,
@@ -260,87 +223,148 @@ const Rig = () => {
     driveValue,
   ]);
 
+  const callUser = (id) => {
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: stream,
+    });
+
+    peer.on("signal", (data) => {
+      socket.emit("callUser", {
+        userToCall: id,
+        signalData: data,
+        from: me,
+        name: name,
+      });
+    });
+    peer.on("stream", (stream) => {
+      otherUserVideo.current.srcObject = stream;
+    });
+
+    socket.on("callAccepted", (signal) => {
+      setCallerAccepted(true);
+      peer.signal(signal);
+    });
+
+    connectionRef.current = peer;
+  };
+
+  const answerCall = () => {
+    setCallerAccepted(true);
+
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: stream,
+    });
+
+    peer.on("signal", (data) => {
+      socket.emit("answerCall", { signal: data, to: caller });
+    });
+    peer.on("stream", (stream) => {
+      otherUserVideo.current.srcObject = stream;
+    });
+
+    peer.signal(callerSignal);
+
+    connectionRef.current = peer;
+  };
+
+  const leaveCall = () => {
+    setCallEnded(true);
+    connectionRef.current.destroy();
+  };
+
+  
   return (
     <>
-      <h1>Guitar Rig</h1>
-      <Box sx={{ width: 300 }}>
-        <h2>Volume</h2>
-        <br />
-        <Slider
-          aria-label="Always visible"
-          value={volumeValue * 1}
-          getAriaValueText={valuetext}
-          step={.1}
-          marks={VolumeMarks}
-          valueLabelDisplay="on"
-          onChange={handleChangeVolume}
-        />
-      </Box>
-      <Box sx={{ width: 300 }}>
-        <h2>Pre-Amp</h2>
-        <br />
-        <Slider
-          aria-label="Always visible"
-          value={preampDriveValue * 1}
-          getAriaValueText={valuetext}
-          step={2}
-          marks={PreampMarks}
-          valueLabelDisplay="on"
-          onChange={handleChangePreamp}
-        />
-      </Box>
-      <Box sx={{ width: 300 }}>
-        <h2>Bass</h2>
-        <br />
-        <Slider
-          aria-label="Always visible"
-          value={bassValue * 1}
-          getAriaValueText={valuetext}
-          step={1}
-          marks={BassMarks}
-          valueLabelDisplay="on"
-          onChange={handleChangeBass}
-        />
-      </Box>
-      <Box sx={{ width: 300 }}>
-        <h2>Mid</h2>
-        <br />
-        <Slider
-          aria-label="Always visible"
-          value={midValue * 1}
-          getAriaValueText={valuetext}
-          step={1}
-          marks={MidMarks}
-          valueLabelDisplay="on"
-          onChange={handleChangeMid}
-        />
-      </Box>
-      <Box sx={{ width: 300 }}>
-        <h2>Treble</h2>
-        <br />
-        <Slider
-          aria-label="Always visible"
-          value={trebleValue * 1}
-          getAriaValueText={valuetext}
-          step={10}
-          marks={TrebleMarks}
-          valueLabelDisplay="on"
-          onChange={handleChangeTreble}
-        />
-      </Box>
-      <Box sx={{ width: 300 }}>
-        <h2>Overdrive</h2>
-        <br />
-        <Slider
-          aria-label="Always visible"
-          value={driveValue * 1}
-          getAriaValueText={valuetext}
-          step={10}
-          marks={OverdriveMarks}
-          valueLabelDisplay="on"
-          onChange={handleChangeDrive}
-        />
-      </Box>
+      <h1>Zig and Zag</h1>
+      <Grid container spacing={1} justifyContent="center" alignItems="center">
+        <Grid item lg={6} md={6} sm={12} xs={12}>
+          <Paper component="div" sx={{p:"2"}} elevation={2}>
+          <div className="video">
+            {stream && (
+              <video
+                playsInline
+                ref={myVideo}
+                autoPlay
+                style={{ width: "95%", height: "95%", borderRadius: "5px" }}
+              />
+            )}
+          </div>
+          </Paper>
+        </Grid>
+        <Grid item lg={6} md={6} sm={12} xs={12}>
+          <div className="video">
+            {callAccepted && !callEnded ? (
+              <video
+                playsInline
+                ref={otherUserVideo}
+                autoPlay
+                style={{ width: "95%", height: "95%", borderRadius: "5px" }}
+                className="overlay"
+              />
+            ) : null}
+          </div>
+        </Grid>
+
+        <Grid item lg={12} md={12} sm={12} xs={12}>
+          <div className="callerId">
+            <TextField
+              id="myName"
+              label="Name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              sx={{ mb: "20px" }}
+            />
+            <p>
+              My ID:
+              <br /> {me}
+            </p>
+            <CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
+              <Button startIcon={<AssignmentIcon fontSize="large" />}>
+                Copy My ID
+              </Button>
+            </CopyToClipboard>
+            <TextField
+              id="idToCall"
+              label="ID to Call"
+              value={idToCall}
+              onChange={(event) => setIdToCall(event.target.value)}
+            />
+            <div className="callButton">
+              {callAccepted && !callEnded ? (
+                <Button onClick={leaveCall}>End Call</Button>
+              ) : (
+                <IconButton
+                  aria-label="call"
+                  onClick={() => callUser(idToCall)}
+                >
+                  <PhoneIcon fontSize="large" />
+                </IconButton>
+              )}
+              {idToCall}
+            </div>
+          </div>
+        </Grid>
+        <Grid item lg={12} md={12} sm={12} xs={12}>
+          <div>
+            {receivingCall && !callAccepted ? (
+              <div className="caller">
+                <h1>{name} is calling...</h1>
+                <Button
+                  onClick={answerCall}
+                  variant={"contained"}
+                  color="primary"
+                >
+                  Answer
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </Grid>
+      </Grid>
 
       <label htmlFor="volumeRange">Volume</label>
       <input
@@ -378,7 +402,7 @@ const Rig = () => {
       <input
         type="range"
         min="-10"
-        max="10"
+        max="100"
         value={midValue}
         id="midRange"
         onChange={handleChangeMid}
@@ -388,7 +412,7 @@ const Rig = () => {
       <input
         type="range"
         min="-10"
-        max="10"
+        max="100"
         value={trebleValue}
         id="trebleRange"
         onChange={handleChangeTreble}

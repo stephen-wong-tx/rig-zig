@@ -19,3 +19,85 @@ form div {
   margin: 1em;
   display: inline-block;
 }
+
+body {
+	background: #312f79; /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #7c58b6, #4c1db9); /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(
+		to right,
+		#39a075,
+		#3d5a72
+	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+label {
+  display: block;
+}
+
+nav a {
+  display: inline-block;
+  margin: 1em;
+}
+
+form div {
+  margin: 1em;
+  display: inline-block;
+}
+
+
+.container {
+	display: grid;
+	grid-template-columns: 5fr 3fr;
+}
+
+.callerId {
+	margin-right: 5rem;
+	border-radius: 5px;
+	background: #c9d6ff; /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #e2e2e2, #c9d6ff); /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(
+		to right,
+		#e2e2e2,
+		#c9d6ff
+	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+	padding: 2rem;
+	display: grid;
+	justify-content: center;
+	align-content: center;
+}
+
+.callButton {
+	text-align: center;
+	margin-top: 2rem;
+}
+
+.caller {
+	text-align: center;
+	color: #fff;
+}
+
+video{
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: .5em;
+  padding-bottom: .5em;
+  z-index: 1;
+}
+
+/* .video .overlay{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
+  background: green;
+  opacity: 0.5;
+} */
