@@ -2,7 +2,34 @@ const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const http = require("http")
+const server = http.createServer(app)
 module.exports = app
+module.exports = server
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+})
+
+io.on("connection", (socket) => {
+  socket.emit("me", socket.id);
+
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded")
+  });
+
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    io.to(userToCall).emit("callUser", { signal: signalData, from: from, name: name })
+  });
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal)
+  })
+
+})
 
 // logging middleware
 app.use(morgan('dev'))
