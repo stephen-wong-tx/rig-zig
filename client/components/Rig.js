@@ -6,8 +6,8 @@ import { Button, IconButton, TextField, Grid, Paper } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PhoneIcon from "@mui/icons-material/Phone";
 
-// const socket = io.connect('https://peer-pedalboard.herokuapp.com/');
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect('https://peer-pedalboard.herokuapp.com/');
+// const socket = io.connect("http://localhost:8080");
 
 const Rig = () => {
   const [receivingCall, setReceivingCall] = useState(false);
@@ -20,11 +20,11 @@ const Rig = () => {
   const [caller, setCaller] = useState("");
   const [name, setName] = useState("");
   const [volumeValue, setVolumeValue] = useState("1");
-  const [preampDriveValue, setPreampDriveValue] = useState("10");
+  const [preampDriveValue, setPreampDriveValue] = useState("50");
   const [bassValue, setBassValue] = useState("-10");
   const [midValue, setMidValue] = useState("8");
   const [trebleValue, setTrebleValue] = useState("9");
-  const [driveValue, setDriveValue] = useState("50");
+  const [driveValue, setDriveValue] = useState("100");
   const myVideo = useRef();
   const connectionRef = useRef();
   const otherUserVideo = useRef();
@@ -163,7 +163,7 @@ const Rig = () => {
         // Overdrive - variable
         const driveEQ = context.createWaveShaper();
         driveEQ.curve = makeDriveCurve(driveValue * 1);
-        // driveEQ.oversample = '1x';
+        driveEQ.oversample = '4x';
         // still need the gain node one here ^
 
         /**
