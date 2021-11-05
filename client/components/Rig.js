@@ -6,8 +6,8 @@ import { Button, IconButton, TextField, Grid, Paper } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PhoneIcon from "@mui/icons-material/Phone";
 
-const socket = io.connect('https://rig-zig.herokuapp.com/');
-// const socket = io.connect("http://localhost:8080");
+// const socket = io.connect('https://rig-zig.herokuapp.com/');
+const socket = io.connect("http://localhost:8080");
 
 const Rig = () => {
   const [receivingCall, setReceivingCall] = useState(false);
@@ -20,11 +20,11 @@ const Rig = () => {
   const [caller, setCaller] = useState("");
   const [name, setName] = useState("");
   const [volumeValue, setVolumeValue] = useState("1");
-  const [preampDriveValue, setPreampDriveValue] = useState("50");
+  const [preampDriveValue, setPreampDriveValue] = useState("100");
   const [bassValue, setBassValue] = useState("-10");
   const [midValue, setMidValue] = useState("8");
   const [trebleValue, setTrebleValue] = useState("9");
-  const [driveValue, setDriveValue] = useState("100");
+  const [driveValue, setDriveValue] = useState("150");
   const myVideo = useRef();
   const connectionRef = useRef();
   const otherUserVideo = useRef();
@@ -106,9 +106,11 @@ const Rig = () => {
           autoGainControl: false,
           noiseSuppression: false,
           latency: 0,
-        },
+        }
       })
       .then((stream) => {
+        console.log('stream', stream)
+        console.log('hello')
         /**
          * The stream object contains both video and audio. I need to affect the audio with Web Audio API.
          * Store the video track in a variable, and then merge the video and audio back at the end.
@@ -127,7 +129,7 @@ const Rig = () => {
 
         // gain stuff - v
         // gainNode AKA Volume - variable
-        const gainNode = new GainNode(context, { gain: volumeValue * 1 });
+        const gainNode = new GainNode(context, { gain: 2 * 1 });
 
         // compression - static value
         const compression = new GainNode(context, { gain: 1 });
@@ -191,17 +193,19 @@ const Rig = () => {
          */
 
         const controlledStream = mediaStreamDestination.stream;
-        for (const videoTrack of videoTracks) {
-          controlledStream.addTrack(videoTrack);
-        }
+        // for (const videoTrack of videoTracks) {
+        //   controlledStream.addTrack(videoTrack);
+        // }
 
         /**
          * Use the stream that went through the Web Audio API node effect chain.
          */
 
         localStream = controlledStream;
+        
         setStream(controlledStream);
         myVideo.current.srcObject = stream;
+        console.log(stream)
       });
 
     socket.on("me", (id) => {
@@ -287,6 +291,7 @@ const Rig = () => {
             {stream && (
               <video
                 playsInline
+                muted
                 ref={myVideo}
                 autoPlay
                 style={{ width: "95%", height: "95%", borderRadius: "5px" }}
