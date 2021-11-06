@@ -110,7 +110,6 @@ const Videos = (props) => {
             {stream && (
               <video
                 playsInline
-                muted
                 ref={myVideo}
                 autoPlay
                 style={{ width: "95%", height: "95%", borderRadius: "5px" }}
