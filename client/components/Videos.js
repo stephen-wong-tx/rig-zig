@@ -6,8 +6,8 @@ import { Button, IconButton, TextField, Grid, Paper } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PhoneIcon from "@mui/icons-material/Phone";
 
-const socket = io.connect('https://rig-zig.herokuapp.com/');
-// const socket = io.connect("http://localhost:8080");
+// const socket = io.connect('https://rig-zig.herokuapp.com/');
+const socket = io.connect("http://localhost:8080");
 
 const Videos = (props) => {
   const {stream} = props;
@@ -102,7 +102,7 @@ const Videos = (props) => {
   
   return (
     <>
-      <h1>Zig and Zag</h1>
+      
       <Grid container spacing={1} justifyContent="center" alignItems="center">
         <Grid item lg={6} md={6} sm={12} xs={12}>
           <Paper component="div" sx={{p:"2"}} elevation={2}>
@@ -142,12 +142,12 @@ const Videos = (props) => {
               onChange={(event) => setName(event.target.value)}
               sx={{ mb: "20px" }}
             />
-            <p>
-              My ID:
+            <p className="callControlls">
+              <span className="myId">My ID:</span>
               <br /> {me}
             </p>
             <CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
-              <Button startIcon={<AssignmentIcon fontSize="large" />}>
+              <Button className="copyId" startIcon={<AssignmentIcon fontSize="large" />}>
                 Copy My ID
               </Button>
             </CopyToClipboard>
@@ -168,7 +168,7 @@ const Videos = (props) => {
                   <PhoneIcon fontSize="large" />
                 </IconButton>
               )}
-              {idToCall}
+              
             </div>
           </div>
         </Grid>
@@ -180,7 +180,7 @@ const Videos = (props) => {
                 <Button
                   onClick={answerCall}
                   variant={"contained"}
-                  color="primary"
+                  className="answer"
                 >
                   Answer
                 </Button>

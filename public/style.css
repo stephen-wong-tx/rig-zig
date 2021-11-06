@@ -29,6 +29,7 @@ body {
 		#3d5a72
 	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Helvetica, Arial, sans-serif;
+  color:rgb(243, 241, 239)
 }
 
 a {
@@ -75,7 +76,25 @@ form div {
 .callButton {
 	text-align: center;
 	margin-top: 2rem;
+  transition: .01s ease-out;
 }
+
+.callButton:hover {
+  transform: rotate(15deg);
+  transition: .2s ease-in
+}
+
+.callButton:hover button{
+  
+  transition: .2s ease-in;
+  background-color:rgb(4, 180, 80);
+  color:rgb(243, 243, 243);
+}
+
+.answer{
+  background-color: sandybrown !important;
+}
+
 
 .caller {
 	text-align: center;
@@ -101,3 +120,26 @@ video{
   background: green;
   opacity: 0.5;
 } */
+
+h1.title{
+  font-family: 'Comfortaa', cursive;
+  color:rgb(243, 241, 239);
+  text-align: center;
+  font-size: 3em;
+}
+.myId{
+  font-weight: 700;
+}
+.callControlls{
+  color: rgb(77, 77, 77);
+}
+
+.copyId{
+  color:rgb(233, 233, 233) !important;
+  background-color: rgb(94, 49, 79) !important;
+}
+
+#volume{
+  margin-bottom: 1em;
+  text-align: center;
+}

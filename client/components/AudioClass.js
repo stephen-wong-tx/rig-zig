@@ -6,6 +6,7 @@ import { Button, IconButton, TextField, Grid, Paper } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PhoneIcon from "@mui/icons-material/Phone";
 import Videos from "./Videos";
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 // const socket = io.connect('https://rig-zig.herokuapp.com/');
 const socket = io.connect("http://localhost:8080");
@@ -84,6 +85,9 @@ class AudioClass extends React.Component {
           autoGainControl: false,
           noiseSuppression: false,
           latency: 0,
+          // channelCount: 2,
+          sampleRate: 48000,
+          sampleSize: 16,
         },
       })
       .then((stream) => {
@@ -168,9 +172,9 @@ class AudioClass extends React.Component {
     this.setState({ preampDriveValue: value });
   }
 
-  changeBass(value) {
-    this.setState({ bassValue: value });
-  }
+  // changeBass(value) {
+  //   this.setState({ bassValue: value });
+  // }
 
   async handleChangeVolume(event) {
     let newValue = event.target.value;
@@ -194,12 +198,12 @@ class AudioClass extends React.Component {
     this.state.preampDriveNode.preampDrive.oversample = "x4";
   }
 
-  async handleChangeBass(event) {
-    let newValue = event.target.value;
-    await this.changeBass(event.target.value);
-    let bassNode = this.state.bassNode;
-    bassNode.gain.value = newValue;
-  }
+  // async handleChangeBass(event) {
+  //   let newValue = event.target.value;
+  //   await this.changeBass(event.target.value);
+  //   let bassNode = this.state.bassNode;
+  //   bassNode.gain.value = newValue;
+  // }
 
   // handleChangePreampDrive(event){
   //   // let newValue = event.target.value;
@@ -224,7 +228,7 @@ class AudioClass extends React.Component {
   // }
 
   render() {
-    const { handleChangeVolume, handleChangePreamp, handleChangeBass } = this;
+    const { handleChangeVolume, handleChangePreamp } = this;
     const {
       volumeValue,
       stream,
@@ -235,9 +239,8 @@ class AudioClass extends React.Component {
     } = this.state;
     return (
       <>
-        <h1>Zig and Zag</h1>
-
-        <label htmlFor="volumeRange">Volume</label>
+        <div id="volume">
+        <label htmlFor="volumeRange"><VolumeUpIcon /> Volume</label>
         <input
           type="range"
           min="0"
@@ -247,8 +250,9 @@ class AudioClass extends React.Component {
           id="volumeRange"
           onChange={handleChangeVolume}
         ></input>
+        </div>
 
-        <label htmlFor="bassRange">Bass Level</label>
+        {/* <label htmlFor="bassRange">Bass Level</label>
         <input
           type="range"
           min="-10"
@@ -257,7 +261,7 @@ class AudioClass extends React.Component {
           step="1"
           id="bassRange"
           onChange={handleChangePreamp(bassValue)}
-        ></input>
+        ></input> */}
         {/* <label htmlFor="hi">hi</label>
         <input
           type="range"
