@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
 import Rig from './Rig'
-import Audio from './Audio'
+import AudioClass from './AudioClass'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
@@ -27,7 +27,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
     </nav>
     <hr />
     {/* <Rig /> */}
-    <Audio />
+    <AudioClass />
   </div>
 )
 
