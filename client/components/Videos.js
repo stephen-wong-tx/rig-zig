@@ -6,8 +6,8 @@ import { Button, IconButton, TextField, Grid, Paper } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PhoneIcon from "@mui/icons-material/Phone";
 
-// const socket = io.connect('https://rig-zig.herokuapp.com/');
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect('https://rig-zig.herokuapp.com/');
+// const socket = io.connect("http://localhost:8080");
 
 const Videos = (props) => {
   const {stream} = props;
