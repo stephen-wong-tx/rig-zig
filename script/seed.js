@@ -21,7 +21,7 @@ async function seed() {
   return {
     users: {
       cody: users[0],
-      murphy: users[1]
+      billy: users[1]
     }
   }
 }
