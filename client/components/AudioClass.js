@@ -30,6 +30,7 @@ class AudioClass extends React.Component {
     // this.handleChangePreampDrive = this.handleChangePreampDrive(this);
     this.makePreAmpCurve = this.makePreAmpCurve.bind(this);
     this.pulseCurve = this.pulseCurve.bind(this);
+    this.handleChangeBass = this.handleChangeBass.bind(this);
     // this.makePreampDriveCurve = this.makePreampDriveCurve(this);
   }
   makePreAmpCurve() {
@@ -123,8 +124,9 @@ class AudioClass extends React.Component {
         const bassEQ = new BiquadFilterNode(context, {
           type: "lowshelf",
           frequency: 500,
-          gain: this.state.bassValue,
+          gain: this.state.bassValue * 1,
         });
+        this.setState({ bassNode: bassEQ });
         const midEQ = new BiquadFilterNode(context, {
           type: "peaking",
           Q: Math.SQRT1_2,
@@ -147,7 +149,7 @@ class AudioClass extends React.Component {
           .connect(compression)
           .connect(preamp)
           .connect(this.state.preampDriveNode)
-          .connect(bassEQ)
+          .connect(this.state.bassNode)
           .connect(midEQ)
           .connect(trebleEQ)
           .connect(overdriveEQ)
@@ -172,9 +174,9 @@ class AudioClass extends React.Component {
     this.setState({ preampDriveValue: value });
   }
 
-  // changeBass(value) {
-  //   this.setState({ bassValue: value });
-  // }
+  changeBass(value) {
+    this.setState({ bassValue: value });
+  }
 
   async handleChangeVolume(event) {
     let newValue = event.target.value;
@@ -198,12 +200,13 @@ class AudioClass extends React.Component {
     this.state.preampDriveNode.preampDrive.oversample = "x4";
   }
 
-  // async handleChangeBass(event) {
-  //   let newValue = event.target.value;
-  //   await this.changeBass(event.target.value);
-  //   let bassNode = this.state.bassNode;
-  //   bassNode.gain.value = newValue;
-  // }
+  async handleChangeBass(event) {
+    let newValue = event.target.value;
+    await this.changeBass(event.target.value);
+    let bassNode = this.state.bassNode;
+    bassNode.gain.value = newValue;
+    await this.setState({ bassNode });
+  }
 
   // handleChangePreampDrive(event){
   //   // let newValue = event.target.value;
@@ -228,7 +231,7 @@ class AudioClass extends React.Component {
   // }
 
   render() {
-    const { handleChangeVolume, handleChangePreamp } = this;
+    const { handleChangeVolume, handleChangePreamp, handleChangeBass } = this;
     const {
       volumeValue,
       stream,
@@ -252,7 +255,7 @@ class AudioClass extends React.Component {
         ></input>
         </div>
 
-        {/* <label htmlFor="bassRange">Bass Level</label>
+        <label htmlFor="bassRange">Bass Level</label>
         <input
           type="range"
           min="-10"
@@ -260,8 +263,8 @@ class AudioClass extends React.Component {
           value={bassValue}
           step="1"
           id="bassRange"
-          onChange={handleChangePreamp(bassValue)}
-        ></input> */}
+          onChange={handleChangeBass}
+        ></input>
         {/* <label htmlFor="hi">hi</label>
         <input
           type="range"
